@@ -44,7 +44,7 @@ announcement () { ${SOFT}/print_comment.py "$1" "#"; }
 run_checkm () {
 	if [[ -d ${1}.checkm ]]; then rm -r ${1}.checkm; fi
         comm "Running CheckM on $1 bins"
-        checkm lineage_wf -x fa $1 ${1}.checkm -t $threads --pplacer_threads $p_threads
+        checkm lineage_wf -x fa $1 ${1}.checkm -t $threads --pplacer_threads $threads
         if [[ ! -s ${1}.checkm/storage/bin_stats_ext.tsv ]]; then error "Something went wrong with running CheckM. Exiting..."; fi
         comm "Finalizing CheckM stats and plots..."
         ${SOFT}/summarize_checkm.py ${1}.checkm/storage/bin_stats_ext.tsv | (read -r; printf "%s\n" "$REPLY"; sort -rn -k2) > ${1}.stats
@@ -126,7 +126,7 @@ else
 	p_threads=$threads
 fi
 
-comm "There is $mem RAM and $threads threads available, and each pplacer thread uses >40GB, so I will use $p_threads threads for pplacer"
+comm "There is $mem RAM and $threads threads available, and each pplacer thread uses >40GB, so I will use $threads threads for pplacer"
 
 ########################################################################################################
 ########################               BEGIN REFINEMENT PIPELINE!               ########################
@@ -238,7 +238,7 @@ if [ "$run_checkm" == "true" ]; then
 	for bin_set in $(ls | grep -v tmp); do 
 		comm "Running CheckM on $bin_set bins"
 		mkdir ${bin_set}.tmp
-		checkm lineage_wf -x fa $bin_set ${bin_set}.checkm -t $threads --tmpdir ${bin_set}.tmp --pplacer_threads $p_threads
+		checkm lineage_wf -x fa $bin_set ${bin_set}.checkm -t $threads --tmpdir ${bin_set}.tmp --pplacer_threads $threads
 		if [[ ! -s ${bin_set}.checkm/storage/bin_stats_ext.tsv ]]; then error "Something went wrong with running CheckM. Exiting..."; fi
 		${SOFT}/summarize_checkm.py ${bin_set}.checkm/storage/bin_stats_ext.tsv $bin_set | (read -r; printf "%s\n" "$REPLY"; sort) > ${bin_set}.stats
 		if [[ $? -ne 0 ]]; then error "Cannot make checkm summary file. Exiting."; fi
@@ -327,7 +327,7 @@ announcement "FINALIZING THE REFINED BINS"
 if [ "$run_checkm" == "true" ] && [ $dereplicate != "false" ]; then
 	comm "Re-running CheckM on binsO bins"
 	mkdir binsO.tmp
-	checkm lineage_wf -x fa binsO binsO.checkm -t $threads --tmpdir binsO.tmp --pplacer_threads $p_threads
+	checkm lineage_wf -x fa binsO binsO.checkm -t $threads --tmpdir binsO.tmp --pplacer_threads $threads
 	if [[ ! -s binsO.checkm/storage/bin_stats_ext.tsv ]]; then error "Something went wrong with running CheckM. Exiting..."; fi
 	rm -r binsO.tmp
 	${SOFT}/summarize_checkm.py binsO.checkm/storage/bin_stats_ext.tsv manual binsM.stats | (read -r; printf "%s\n" "$REPLY"; sort -rn -k2) > binsO.stats
