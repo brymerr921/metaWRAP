@@ -29,7 +29,7 @@ help_message () {
 	echo "	-t INT          number of threads (default=1)"
 	echo "	-m INT		amount of RAM available (default=4)"
 	echo "	-l INT		minimum contig length to bin (default=1000bp). Note: metaBAT will default to 1500bp minimum"
-	echo "  -c INT		max number of clusters for CONCOCT to search for. Fewer = shorter run time. (default=400)"
+	echo "	-c INT		max number of clusters for CONCOCT to search for. Fewer = shorter run time. (default=400)"
 	echo ""
         echo "	--metabat2      bin contigs with metaBAT2"
 	echo "	--metabat1	bin contigs with the original metaBAT"
@@ -85,7 +85,7 @@ checkm=false; single_end=false
 markers=107
 
 # load in params
-OPTS=`getopt -o ht:m:o:a:l: --long help,metabat1,metabat2,maxbin2,concoct,run-checkm,single-end,universal -- "$@"`
+OPTS=`getopt -o ht:m:o:a:l:c: --long help,metabat1,metabat2,maxbin2,concoct,run-checkm,single-end,universal -- "$@"`
 # make sure the params are entered correctly
 if [ $? -ne 0 ]; then help_message; exit 1; fi
 
