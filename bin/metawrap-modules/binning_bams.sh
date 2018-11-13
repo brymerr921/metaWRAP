@@ -29,6 +29,7 @@ help_message () {
 	echo "	-t INT          number of threads (default=1)"
 	echo "	-m INT		amount of RAM available (default=4)"
 	echo "	-l INT		minimum contig length to bin (default=1000bp). Note: metaBAT will default to 1500bp minimum"
+	echo "  -c INT		max number of clusters for CONCOCT to search for. Fewer = shorter run time. (default=400)"
 	echo ""
         echo "	--metabat2      bin contigs with metaBAT2"
 	echo "	--metabat1	bin contigs with the original metaBAT"
@@ -77,7 +78,7 @@ config_file=$(which config-metawrap)
 source $config_file
 
 # default params
-threads=1; mem=4; len=1000; out=false; ASSEMBLY=false
+threads=1; mem=4; len=1000; out=false; ASSEMBLY=false; clusters=400
 # long options defaults
 metabat1=false; metabat2=false; maxbin2=false; concoct=false
 checkm=false; single_end=false
@@ -96,6 +97,7 @@ while true; do
                 -o) out=$2; shift 2;;
                 -a) ASSEMBLY=$2; shift 2;;
 		-l) len=$2; shift 2;;
+		-c) clusters=$2; shift 2;;
                 -h | --help) help_message; exit 1; shift 1;;
 		--metabat2) metabat2=true; shift 1;;
 		--metabat1) metabat1=true; shift 1;;
@@ -404,9 +406,9 @@ if [ $concoct = true ]; then
         cd ${out}/work_files/concoct_out
 
 	if [[ $out == /* ]]; then
-		concoct --coverage_file ${out}/work_files/concoct_depth.txt --composition_file ${out}/work_files/assembly.fa -l $len
+		concoct --coverage_file ${out}/work_files/concoct_depth.txt --composition_file ${out}/work_files/assembly.fa -l $len -c $clusters
 	else
-	        concoct --coverage_file ${home}/${out}/work_files/concoct_depth.txt --composition_file ${home}/${out}/work_files/assembly.fa -l $len
+	        concoct --coverage_file ${home}/${out}/work_files/concoct_depth.txt --composition_file ${home}/${out}/work_files/assembly.fa -l $len -c $clusters
         fi
 
 	if [[ $? -ne 0 ]]; then error "Something went wrong with binning with CONCOCT. Exiting."; fi
